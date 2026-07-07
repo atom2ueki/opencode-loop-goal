@@ -1,21 +1,19 @@
 name: Release
 
-# Publishes to npm when a `v*.*.*` tag is pushed.
+# Creates a GitHub Release with auto-generated notes when a `v*.*.*` tag is
+# pushed. Runs the full CI gate (typecheck + test + build + pack check) first.
 #
-# Setup (one-time):
-#   1. Create an npm access token: https://www.npmjs.com/settings/<you>/tokens
-#      - "Publish" or "Automation" type, or a Granular Access token scoped to
-#        `opencode-loop`.
-#   2. Add it as a repository secret named `NPM_TOKEN`:
-#        gh secret set NPM_TOKEN --repo atom2ueki/opencode-loop
-#   3. (Optional, recommended) To enable provenance, also enable "Publish
-#      packages with GitHub Actions" with provenance in your npm settings or
-#      link the package to this repo after the first publish.
+# npm publishing is intentionally NOT wired up here. To enable npm publish
+# later:
+#   1. Create an npm access token (Granular, scoped to `opencode-loop`)
+#   2. `gh secret set NPM_TOKEN --repo atom2ueki/opencode-loop`
+#   3. Add a `Publish to npm` step that runs `npm publish --access public --provenance`
+#      with `NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}`. Requires
+#      `id-token: write` permission (already granted below).
 #
 # To cut a release:
 #   git tag v0.1.0
 #   git push origin v0.1.0
-# The workflow will typecheck, test, build, and publish.
 
 on:
   push:
@@ -23,17 +21,16 @@ on:
       - "v*.*.*"
 
 permissions:
-  contents: read
-  id-token: write  # required for npm provenance
+  contents: write
+  id-token: write
 
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
-    environment: release
     steps:
       - uses: actions/checkout@v4
         with:
@@ -43,12 +40,6 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-
-      - name: Setup Node (for npm publish)
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -65,13 +56,7 @@ jobs:
       - name: Verify package contents
         run: bun run pack:check
 
-      - name: Publish to npm
-        run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       - name: Create GitHub Release
-        if: success()
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
