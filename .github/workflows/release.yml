@@ -1,0 +1,79 @@
+name: Release
+
+# Publishes to npm when a `v*.*.*` tag is pushed.
+#
+# Setup (one-time):
+#   1. Create an npm access token: https://www.npmjs.com/settings/<you>/tokens
+#      - "Publish" or "Automation" type, or a Granular Access token scoped to
+#        `opencode-loop`.
+#   2. Add it as a repository secret named `NPM_TOKEN`:
+#        gh secret set NPM_TOKEN --repo atom2ueki/opencode-loop
+#   3. (Optional, recommended) To enable provenance, also enable "Publish
+#      packages with GitHub Actions" with provenance in your npm settings or
+#      link the package to this repo after the first publish.
+#
+# To cut a release:
+#   git tag v0.1.0
+#   git push origin v0.1.0
+# The workflow will typecheck, test, build, and publish.
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: read
+  id-token: write  # required for npm provenance
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Node (for npm publish)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Unit tests
+        run: bun test
+
+      - name: Build
+        run: bun run build
+
+      - name: Verify package contents
+        run: bun run pack:check
+
+      - name: Publish to npm
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        if: success()
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}

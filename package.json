@@ -21,6 +21,7 @@
     "prepublishOnly": "bun run clean && bun run build",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
+    "pack:check": "npm pack --dry-run",
     "release:patch": "npm version patch && npm publish",
     "release:minor": "npm version minor && npm publish",
     "release:major": "npm version major && npm publish"
@@ -41,6 +42,10 @@
     "url": "git+https://github.com/atom2ueki/opencode-loop.git"
   },
   "homepage": "https://github.com/atom2ueki/opencode-loop#readme",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "dependencies": {
     "@opencode-ai/plugin": "^1.0.0"
   },
