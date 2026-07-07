@@ -34,13 +34,13 @@
     "agent",
     "claude-code"
   ],
-  "author": "",
+  "author": "atom2ueki",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git+https://github.com/atom2ueki/opencode-loop.git"
   },
-  "homepage": "",
+  "homepage": "https://github.com/atom2ueki/opencode-loop#readme",
   "dependencies": {
     "@opencode-ai/plugin": "^1.0.0"
   },
