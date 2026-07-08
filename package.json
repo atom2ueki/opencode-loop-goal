@@ -1,6 +1,6 @@
 {
   "name": "opencode-loop-goal",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Combined OpenCode plugin: session-scoped /loop scheduler + /goal completion-mode (Claude Code parity)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -86,7 +86,7 @@ Still copy `commands/*.md` and `agents/goal.md` into `~/.config/opencode/` — t
 
 ## The goal agent
 
-`agents/goal.md` defines a `mode: primary` agent that sets conditions via `goal_set`, works with normal OpenCode tools, and writes `Goal Completed` only on the synthetic completion-summary turn. Tab-select it (or invoke `/goal`) to use goal mode. Goal Mode only auto-continues while the session is on this agent.
+`agents/goal.md` defines a `mode: primary` **hidden** agent that sets conditions via `goal_set`, works with normal OpenCode tools, and writes `Goal Completed` only on the synthetic completion-summary turn. It is intentionally hidden from the mode picker (like `/loop`, not like plan/build) — invoke it via `/goal`. Goal Mode only auto-continues while the session is on this agent.
 
 ## Tools exposed to the agent
 

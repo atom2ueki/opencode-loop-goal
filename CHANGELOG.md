@@ -4,7 +4,18 @@ All notable changes to this project are documented in this file. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.0] — unreleased
+## [0.2.1] — 2026-07-08
+
+### Fixed
+- `/goal` no longer dumps its multi-line parsing grammar into the chat. The
+  dispatch body is now a single line (`/goal $ARGUMENTS`); the argument grammar
+  (no-args / `status` / `clear` / `<condition>`) moved into the hidden `goal`
+  agent's system prompt, so only the user's input is shown.
+- The **goal** agent is now `hidden: true`, so it no longer appears as a
+  switchable mode next to plan/build (matching `/loop`). It is still the target
+  of the `/goal` command and the synthetic auto-continue turns.
+
+## [0.2.0] — 2026-07-08
 
 Renamed from `opencode-loop` to **`opencode-loop-goal`** and merged in a
 TypeScript rewrite of Goal Mode (ported from
