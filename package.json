@@ -1,13 +1,14 @@
 {
-  "name": "opencode-loop",
-  "version": "0.1.0",
-  "description": "Session-scoped /loop plugin for OpenCode — the Claude Code /loop equivalent",
+  "name": "opencode-loop-goal",
+  "version": "0.2.0",
+  "description": "Combined OpenCode plugin: session-scoped /loop scheduler + /goal completion-mode (Claude Code parity)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "files": [
     "dist",
-    "commands"
+    "commands",
+    "agents"
   ],
   "exports": {
     ".": {
@@ -30,6 +31,8 @@
     "opencode",
     "opencode-plugin",
     "loop",
+    "goal",
+    "goal-mode",
     "cron",
     "scheduler",
     "agent",
@@ -39,9 +42,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/atom2ueki/opencode-loop.git"
+    "url": "git+https://github.com/atom2ueki/opencode-loop-goal.git"
   },
-  "homepage": "https://github.com/atom2ueki/opencode-loop#readme",
+  "homepage": "https://github.com/atom2ueki/opencode-loop-goal#readme",
   "publishConfig": {
     "access": "public",
     "provenance": true
