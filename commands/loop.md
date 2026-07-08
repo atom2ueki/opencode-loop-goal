@@ -51,5 +51,5 @@ If the tool returns an error, surface the error message and suggest a fix.
 
 # When NOT to invoke this command
 
-- The user typed `/loop` with no args and you don't see the `loop_start` tool → tell them the opencode-loop plugin isn't installed (they should see `~/.config/opencode/plugins/loop.ts`).
+- The user typed `/loop` with no args and you don't see the `loop_start` tool → tell them the opencode-loop-goal plugin isn't installed (they should check the `plugin` entry in their `opencode.jsonc`).
 - The user is asking a question *about* loops rather than invoking one (e.g. "how do loops work?") → answer conversationally, don't call a tool.

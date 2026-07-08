@@ -1,42 +1,7 @@
 import { expect, test, describe } from "bun:test"
-
-// We test the pure logic by re-implementing the same exports the plugin uses
-// internally. The plugin file itself doesn't export these, so for a real
-// package you'd factor them into a separate module. This is a smoke test
-// that the math is sound.
-
-// Re-implemented here for testing — keep in sync with src/index.ts
-function parseInterval(input: string): number | null {
-  const m = /^(\d+)([smhd])$/.exec(input.trim())
-  if (!m) return null
-  const n = parseInt(m[1], 10)
-  if (!Number.isFinite(n) || n <= 0) return null
-  const unit = m[2]
-  return unit === "s" ? n * 1000
-    : unit === "m" ? n * 60_000
-    : unit === "h" ? n * 3_600_000
-    : unit === "d" ? n * 86_400_000
-    : null
-}
-
-function isCronExpression(input: string): boolean {
-  return input.trim().split(/\s+/).length === 5
-}
-
-function fnv1a32(input: string): number {
-  let hash = 0x811c9dc5
-  for (let i = 0; i < input.length; i++) {
-    hash ^= input.charCodeAt(i)
-    hash = Math.imul(hash, 0x01000193)
-  }
-  return hash >>> 0
-}
-
-function computeJitterMs(jobId: string, intervalMs?: number): number {
-  const MAX_JITTER_MS = 30 * 60 * 1000
-  const max = intervalMs && intervalMs < 2 * MAX_JITTER_MS ? Math.floor(intervalMs / 2) : MAX_JITTER_MS
-  return fnv1a32(jobId) % Math.max(max, 1)
-}
+import { computeJitterMs } from "../src/loop/jitter"
+import { isCronExpression, parseInterval } from "../src/loop/cron"
+import { fnv1a32 } from "../src/shared/util"
 
 describe("parseInterval", () => {
   test("parses seconds", () => {
@@ -78,23 +43,18 @@ describe("isCronExpression", () => {
 
 describe("computeJitterMs", () => {
   test("is deterministic per id", () => {
-    const a = computeJitterMs("abc12345")
-    const b = computeJitterMs("abc12345")
-    expect(a).toBe(b)
+    expect(computeJitterMs("abc12345")).toBe(computeJitterMs("abc12345"))
   })
   test("different ids get different jitter (usually)", () => {
     const ids = ["aaaaaaaa", "bbbbbbbb", "cccccccc", "dddddddd", "eeeeeeee"]
-    const jitters = ids.map((id) => computeJitterMs(id))
-    const unique = new Set(jitters)
+    const unique = new Set(ids.map((id) => computeJitterMs(id)))
     expect(unique.size).toBeGreaterThan(1)
   })
   test("caps at 30 min for long intervals", () => {
-    const j = computeJitterMs("anyid", 60 * 60 * 1000) // 1h interval
-    expect(j).toBeLessThanOrEqual(30 * 60 * 1000)
+    expect(computeJitterMs("anyid", 60 * 60 * 1000)).toBeLessThanOrEqual(30 * 60 * 1000)
   })
   test("caps at half-interval for short intervals", () => {
-    const j = computeJitterMs("anyid", 5 * 60 * 1000) // 5 min interval
-    expect(j).toBeLessThanOrEqual(2.5 * 60 * 1000)
+    expect(computeJitterMs("anyid", 5 * 60 * 1000)).toBeLessThanOrEqual(2.5 * 60 * 1000)
   })
   test("is non-negative", () => {
     for (let i = 0; i < 100; i++) {

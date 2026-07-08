@@ -5,15 +5,15 @@ name: Release
 #
 # npm publishing is intentionally NOT wired up here. To enable npm publish
 # later:
-#   1. Create an npm access token (Granular, scoped to `opencode-loop`)
-#   2. `gh secret set NPM_TOKEN --repo atom2ueki/opencode-loop`
+#   1. Create an npm access token (Granular, scoped to `opencode-loop-goal`)
+#   2. `gh secret set NPM_TOKEN --repo atom2ueki/opencode-loop-goal`
 #   3. Add a `Publish to npm` step that runs `npm publish --access public --provenance`
 #      with `NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}`. Requires
 #      `id-token: write` permission (already granted below).
 #
 # To cut a release:
-#   git tag v0.1.0
-#   git push origin v0.1.0
+#   git tag v0.2.0
+#   git push origin v0.2.0
 
 on:
   push:
